@@ -3,13 +3,19 @@
    File: src/main.js
    ================================================== */
 
+
 import "./style.css";
+
+
+/* ==================================================
+   IMPORT COMPONENTS
+   ================================================== */
 
 import heroHTML from "./components/hero.html?raw";
 
 
 /* ==================================================
-   LOAD PAGE COMPONENTS
+   LOAD COMPONENTS
    ================================================== */
 
 document.addEventListener(
@@ -18,7 +24,7 @@ document.addEventListener(
 
 
         /* =========================================
-           HERO
+           HERO COMPONENT
            ========================================= */
 
         const heroContainer =
