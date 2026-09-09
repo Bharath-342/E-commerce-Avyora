@@ -1,0 +1,791 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>AVYORA - Shop Smarter, Live Better</title>
+
+
+    <!-- =========================================
+         FAVICON
+         ========================================= -->
+
+    <link
+        rel="icon"
+        type="image/x-icon"
+        href="/favicon.ico">
+
+
+    <!-- =========================================
+         BOOTSTRAP CSS
+         ========================================= -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+
+    <!-- =========================================
+         BOOTSTRAP ICONS
+         ========================================= -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <!-- =========================================
+         COMMON CSS
+         ========================================= -->
+
+    <link
+        rel="stylesheet"
+        href="/src/style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         HEADER
+         ========================================= -->
+
+    <nav
+        class="navbar navbar-expand-lg fixed-top border-bottom">
+
+        <div class="container">
+
+
+            <!-- =====================================
+                 LOGO
+                 ===================================== -->
+
+            <a
+                href="index.html"
+                class="navbar-brand">
+
+                <img
+                    src="/avyora-logo.png"
+                    alt="AVYORA"
+                    class="brand-logo">
+
+            </a>
+
+
+            <!-- =====================================
+                 MOBILE TOGGLER
+                 ===================================== -->
+
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+
+            <!-- =====================================
+                 NAVBAR CONTENT
+                 ===================================== -->
+
+            <div
+                class="collapse navbar-collapse"
+                id="mainNavbar">
+
+
+                <!-- =================================
+                     SEARCH
+                     ================================= -->
+
+                <form
+                    class="d-flex mx-lg-auto my-3 my-lg-0"
+                    style="max-width: 500px; width: 100%;">
+
+                    <div class="input-group">
+
+                        <input
+                            type="search"
+                            class="form-control"
+                            placeholder="Search products..."
+                            aria-label="Search products">
+
+
+                        <button
+                            class="btn btn-avyora"
+                            type="submit">
+
+                            <i class="bi bi-search"></i>
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+                <!-- =================================
+                     RIGHT NAVIGATION
+                     ================================= -->
+
+                <ul
+                    class="navbar-nav ms-lg-4 align-items-lg-center">
+
+
+                    <!-- FAVORITES -->
+
+                    <li class="nav-item">
+
+                        <a
+                            href="favorites.html"
+                            class="nav-link text-dark icon-btn"
+                            title="Favorites"
+                            aria-label="Favorites">
+
+                            <i class="bi bi-heart"></i>
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- CART -->
+
+                    <li class="nav-item">
+
+                        <a
+                            href="cart.html"
+                            class="nav-link text-dark icon-btn"
+                            title="Cart"
+                            aria-label="Cart">
+
+                            <i class="bi bi-cart3"></i>
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- =================================
+                         THEME
+                         ================================= -->
+
+                    <li class="nav-item dropdown">
+
+                        <button
+                            class="theme-button"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            aria-label="Theme settings"
+                            title="Theme settings">
+
+                            <i
+                                id="themeIcon"
+                                class="bi bi-sun">
+                            </i>
+
+                        </button>
+
+
+                        <div
+                            class="dropdown-menu dropdown-menu-end theme-dropdown p-3">
+
+
+                            <h6 class="fw-bold mb-3">
+                                Appearance
+                            </h6>
+
+
+                            <!-- LIGHT -->
+
+                            <div
+                                id="lightThemeOption"
+                                class="theme-option active d-flex align-items-center p-2 mb-2">
+
+                                <i
+                                    class="bi bi-sun fs-5 me-3">
+                                </i>
+
+
+                                <div>
+
+                                    <div class="fw-semibold">
+                                        Light
+                                    </div>
+
+                                    <small class="text-secondary">
+                                        Light appearance
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- DARK -->
+
+                            <div
+                                id="darkThemeOption"
+                                class="theme-option d-flex align-items-center p-2 mb-3">
+
+                                <i
+                                    class="bi bi-moon-stars fs-5 me-3">
+                                </i>
+
+
+                                <div>
+
+                                    <div class="fw-semibold">
+                                        Dark
+                                    </div>
+
+                                    <small class="text-secondary">
+                                        Dark appearance
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <hr>
+
+
+                            <!-- BRIGHTNESS -->
+
+                            <div class="mt-3">
+
+                                <div
+                                    class="d-flex justify-content-between align-items-center mb-2">
+
+                                    <span class="fw-semibold">
+                                        Brightness
+                                    </span>
+
+
+                                    <span
+                                        id="brightnessValue"
+                                        class="text-secondary">
+
+                                        100%
+
+                                    </span>
+
+                                </div>
+
+
+                                <input
+                                    type="range"
+                                    class="form-range"
+                                    id="brightnessSlider"
+                                    min="50"
+                                    max="100"
+                                    value="100"
+                                    step="1">
+
+
+                                <small class="text-secondary">
+
+                                    Adjust brightness for the selected appearance.
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </li>
+
+
+                    <!-- ACCOUNT -->
+
+                    <li class="nav-item">
+
+                        <a
+                            href="account.html"
+                            class="nav-link text-dark icon-btn"
+                            title="Account"
+                            aria-label="Account">
+
+                            <i class="bi bi-person-circle"></i>
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================
+         MAIN CONTENT
+         ========================================= -->
+
+    <main>
+
+
+        <!-- =====================================
+             HERO COMPONENT
+             ===================================== -->
+
+        <div id="hero-container"></div>
+
+
+        <!-- =====================================
+             FUTURE HOMEPAGE SECTIONS
+             ===================================== -->
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER
+         ========================================= -->
+
+    <footer class="pt-5 pb-3">
+
+        <div class="container">
+
+
+            <!-- =====================================
+                 FOOTER TOP
+                 ===================================== -->
+
+            <div class="row g-4">
+
+
+                <!-- BRAND -->
+
+                <div class="col-lg-4 col-md-6">
+
+                    <a
+                        href="index.html"
+                        class="d-inline-block mb-3">
+
+                        <img
+                            src="/avyora-logo.png"
+                            alt="AVYORA"
+                            class="brand-logo">
+
+                    </a>
+
+
+                    <p class="mb-3">
+                        Shop Smarter — Live Better
+                    </p>
+
+
+                    <p>
+
+                        Discover quality products,
+                        enjoy easy shopping, secure
+                        payments, and reliable delivery
+                        with AVYORA.
+
+                    </p>
+
+
+                    <!-- NEWSLETTER -->
+
+                    <div class="input-group mt-3">
+
+                        <input
+                            type="email"
+                            class="form-control"
+                            placeholder="Enter your email"
+                            aria-label="Email address">
+
+
+                        <button
+                            class="btn btn-avyora"
+                            type="button">
+
+                            Subscribe
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================
+                     SHOP
+                     ================================= -->
+
+                <div class="col-lg-2 col-md-6">
+
+                    <h6 class="fw-bold mb-3">
+                        SHOP
+                    </h6>
+
+
+                    <ul class="list-unstyled">
+
+                        <li class="mb-2">
+
+                            <a href="products.html">
+                                All Products
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="new-arrivals.html">
+                                New Arrivals
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="best-sellers.html">
+                                Best Sellers
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="deals.html">
+                                Deals & Offers
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="categories.html">
+                                Categories
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+                <!-- =================================
+                     CUSTOMER CARE
+                     ================================= -->
+
+                <div class="col-lg-2 col-md-6">
+
+                    <h6 class="fw-bold mb-3">
+                        CUSTOMER CARE
+                    </h6>
+
+
+                    <ul class="list-unstyled">
+
+                        <li class="mb-2">
+
+                            <a href="account.html">
+                                My Account
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="track-order.html">
+                                Track Order
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="shipping.html">
+                                Shipping & Delivery
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="returns.html">
+                                Returns & Refunds
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="contact.html">
+                                Contact Us
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="help.html">
+                                Help Center
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+                <!-- =================================
+                     ABOUT
+                     ================================= -->
+
+                <div class="col-lg-2 col-md-6">
+
+                    <h6 class="fw-bold mb-3">
+                        ABOUT AVYORA
+                    </h6>
+
+
+                    <ul class="list-unstyled">
+
+                        <li class="mb-2">
+
+                            <a href="about.html">
+                                About Us
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="our-story.html">
+                                Our Story
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="careers.html">
+                                Careers
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="privacy.html">
+                                Privacy Policy
+                            </a>
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            <a href="terms.html">
+                                Terms & Conditions
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 SERVICE FEATURES
+                 ===================================== -->
+
+            <hr class="my-4">
+
+
+            <div class="row text-center g-4">
+
+
+                <!-- SECURE PAYMENTS -->
+
+                <div class="col-md-3">
+
+                    <i class="bi bi-shield-check fs-3"></i>
+
+
+                    <h6 class="fw-bold mt-2">
+                        Secure Payments
+                    </h6>
+
+
+                    <small>
+                        Safe & secure checkout
+                    </small>
+
+                </div>
+
+
+                <!-- EASY RETURNS -->
+
+                <div class="col-md-3">
+
+                    <i class="bi bi-arrow-repeat fs-3"></i>
+
+
+                    <h6 class="fw-bold mt-2">
+                        Easy Returns
+                    </h6>
+
+
+                    <small>
+                        Hassle-free returns
+                    </small>
+
+                </div>
+
+
+                <!-- RELIABLE DELIVERY -->
+
+                <div class="col-md-3">
+
+                    <i class="bi bi-truck fs-3"></i>
+
+
+                    <h6 class="fw-bold mt-2">
+                        Reliable Delivery
+                    </h6>
+
+
+                    <small>
+                        Delivered with care
+                    </small>
+
+                </div>
+
+
+                <!-- CUSTOMER SUPPORT -->
+
+                <div class="col-md-3">
+
+                    <i class="bi bi-headset fs-3"></i>
+
+
+                    <h6 class="fw-bold mt-2">
+                        Customer Support
+                    </h6>
+
+
+                    <small>
+                        We're here to help
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 BOTTOM FOOTER
+                 ===================================== -->
+
+            <hr class="my-4">
+
+
+            <div
+                class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+
+
+                <p class="mb-0">
+
+                    © 2026 AVYORA. All rights reserved.
+
+                </p>
+
+
+                <div>
+
+                    <a
+                        href="privacy.html"
+                        class="me-3">
+
+                        Privacy Policy
+
+                    </a>
+
+
+                    <a href="terms.html">
+
+                        Terms & Conditions
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =========================================
+         BOOTSTRAP JS
+         ========================================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+    <!-- =========================================
+         MAIN JS
+         ========================================= -->
+
+    <script
+        type="module"
+        src="/src/main.js">
+    </script>
+
+
+    <!-- =========================================
+         THEME JS
+         ========================================= -->
+
+    <script
+        type="module"
+        src="/src/theme.js">
+    </script>
+
+</body>
+
+</html>
