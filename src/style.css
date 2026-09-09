@@ -585,6 +585,21 @@ body::before {
 }
 
 
+.hero-image {
+
+    display: block;
+
+    width: 100%;
+
+    max-width: 600px;
+
+    height: auto;
+
+    object-fit: contain;
+
+}
+
+
 /* ==================================================
    HERO BACKGROUND CIRCLE
    ================================================== */
@@ -803,6 +818,25 @@ body::before {
     color: #b9b2a9;
 
     font-size: 1.8rem;
+
+}
+
+
+.headphone-right {
+
+    position: absolute;
+
+    right: 8px;
+
+    bottom: 12px;
+
+    width: 45px;
+
+    height: 65px;
+
+    border-radius: 20px;
+
+    background-color: #e6e1d9;
 
 }
 

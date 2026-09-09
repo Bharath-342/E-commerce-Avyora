@@ -69,6 +69,21 @@ function applyTheme() {
    ================================================== */
 
 function updateThemeUI() {
+    const themeLogos =
+        document.querySelectorAll(
+            ".theme-logo"
+        );
+
+    themeLogos.forEach(
+        function (logo) {
+
+            logo.src =
+                currentTheme === "dark"
+                    ? "/avyora-logo-dark.png"
+                    : "/avyora-logo.png";
+
+        }
+    );
 
     const lightOption =
         document.getElementById("lightThemeOption");
