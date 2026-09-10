@@ -175,15 +175,17 @@
 
                     <li class="nav-item">
 
-                        <a
-                            href="favorites.html"
-                            class="nav-link text-dark icon-btn"
+                        <button
+                            type="button"
+                            class="nav-link text-dark icon-btn wishlist-trigger"
+                            data-wishlist-trigger
                             title="Favorites"
                             aria-label="Favorites">
 
                             <i class="bi bi-heart"></i>
+                            <span id="wishlistCount" class="cart-count" aria-label="Items in wishlist">0</span>
 
-                        </a>
+                        </button>
 
                     </li>
 
@@ -194,15 +196,17 @@
 
                     <li class="nav-item">
 
-                        <a
-                            href="cart.html"
-                            class="nav-link text-dark icon-btn"
+                        <button
+                            type="button"
+                            class="nav-link text-dark icon-btn cart-trigger"
+                            data-cart-trigger
                             title="Cart"
                             aria-label="Cart">
 
                             <i class="bi bi-cart3"></i>
+                            <span id="cartCount" class="cart-count" aria-label="Items in cart">0</span>
 
-                        </a>
+                        </button>
 
                     </li>
 
@@ -393,25 +397,50 @@
                                 WELCOME TO AVYORA
                             </span>
 
-                            <h1 class="hero-title">
+                            <h1 class="hero-title" id="heroTitle">
 
                                 Your Shopping,
 
-                                <span>Made Simple.</span>
+                                <span id="heroTitleAccent">Made Simple.</span>
 
                             </h1>
 
-                            <p class="hero-description">
+                            <p class="hero-description" id="heroDescription">
 
                                 Discover products you'll love with easy shopping,
                                 secure payments, and reliable delivery.
 
                             </p>
 
+                            <div class="hero-mood-picker" aria-label="Choose your shopping mood">
+
+                                <span class="hero-mood-label">WHAT ARE YOU IN THE MOOD FOR?</span>
+
+                                <div class="hero-mood-options" role="group" aria-label="Shopping moods">
+
+                                    <button class="hero-mood-option" type="button" data-mood="power-up" data-filter="electronics" aria-pressed="false" hidden>
+                                        <i class="bi bi-lightning-charge"></i>
+                                        <span>Power up</span>
+                                    </button>
+
+                                    <button class="hero-mood-option" type="button" data-mood="dress-up" data-filter="womenswear" aria-pressed="false" hidden>
+                                        <i class="bi bi-stars"></i>
+                                        <span>Dress up</span>
+                                    </button>
+
+                                    <button class="hero-mood-option" type="button" data-mood="settle-in" data-filter="home" aria-pressed="false" hidden>
+                                        <i class="bi bi-house-heart"></i>
+                                        <span>Settle in</span>
+                                    </button>
+
+                                </div>
+
+                            </div>
+
                             <div class="hero-buttons">
 
                                 <a
-                                    href="products.html"
+                                    href="#product-edit"
                                     class="btn btn-avyora hero-primary-btn">
 
                                     Shop Now
@@ -494,8 +523,121 @@
 
 
         <!-- ==================================================
-             FUTURE HOMEPAGE SECTIONS
+             PRODUCT EDIT
              ================================================== -->
+
+        <section class="product-edit-section" id="product-edit">
+
+            <div class="container">
+
+                <div class="product-breadcrumb">HOME <span>/</span> ALL PRODUCTS</div>
+
+                <div class="product-edit-heading">
+                    <div>
+                        <span class="section-kicker">CURATED FOR EVERYDAY LIVING</span>
+                        <h2 class="product-edit-title">Find your next favorite.</h2>
+                        <p class="product-edit-intro">Thoughtful essentials, useful upgrades, and little luxuries selected for the way you live.</p>
+                    </div>
+                    <div class="product-heading-note"><i class="bi bi-patch-check-fill"></i> Independent picks, thoughtfully sourced</div>
+                </div>
+
+                <div class="product-tabs" role="tablist" aria-label="Product categories">
+                    <button class="product-tab active" type="button" data-filter="all" role="tab" aria-selected="true">All products</button>
+                    <button class="product-tab" type="button" data-filter="electronics" role="tab" aria-selected="false">Electronics</button>
+                    <button class="product-tab" type="button" data-filter="accessories" role="tab" aria-selected="false">Accessories</button>
+                    <button class="product-tab" type="button" data-filter="menswear" role="tab" aria-selected="false">Menswear</button>
+                    <button class="product-tab" type="button" data-filter="womenswear" role="tab" aria-selected="false">Womenswear</button>
+                    <button class="product-tab" type="button" data-filter="beauty" role="tab" aria-selected="false">Beauty</button>
+                    <button class="product-tab" type="button" data-filter="home" role="tab" aria-selected="false">Home &amp; Living</button>
+                    <button class="product-tab" type="button" data-filter="groceries" role="tab" aria-selected="false">Groceries</button>
+                    <button class="product-tab" type="button" data-filter="sports" role="tab" aria-selected="false">Sports</button>
+                    <button class="product-tab" type="button" data-filter="automotive" role="tab" aria-selected="false">Automotive</button>
+                </div>
+
+                <div class="product-toolbar">
+                    <label class="product-search"><i class="bi bi-search"></i><input id="productSearch" type="search" placeholder="Search the collection..." aria-label="Search products"></label>
+                    <div class="product-toolbar-actions">
+                        <span id="productCount" class="product-count">Curating products...</span>
+                        <label class="product-sort-label">Sort by <select id="productSort" aria-label="Sort products"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="rating">Top rated</option></select></label>
+                        <button class="product-view-toggle active" type="button" data-view="grid" aria-label="Grid view"><i class="bi bi-grid-3x3-gap-fill"></i></button>
+                        <button class="product-view-toggle" type="button" data-view="list" aria-label="List view"><i class="bi bi-list"></i></button>
+                    </div>
+                </div>
+
+                <div class="product-feature-panel">
+                    <div class="product-feature-visual">
+                        <span class="product-feature-label">AVYORA EXCLUSIVE</span>
+                        <img id="featuredProductImage" src="https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg" alt="Featured Avyora product">
+                        <div class="product-feature-stamp"><i class="bi bi-stars"></i> Staff favorite</div>
+                        <button class="featured-slide-control featured-slide-prev" type="button" data-featured-prev aria-label="Previous featured product"><i class="bi bi-arrow-left"></i></button>
+                        <button class="featured-slide-control featured-slide-next" type="button" data-featured-next aria-label="Next featured product"><i class="bi bi-arrow-right"></i></button>
+                        <div class="featured-slide-dots" id="featuredSlideDots" aria-label="Featured product slides"></div>
+                    </div>
+                    <div class="product-feature-info">
+                        <span class="product-feature-eyebrow">THE EVERYDAY EDITION</span>
+                        <h3 id="featuredProductTitle">The piece you'll reach for every day.</h3>
+                        <p id="featuredProductDescription">A considered favorite with beautiful details, practical function, and a place in your daily ritual.</p>
+                        <div class="product-feature-rating"><i class="bi bi-star-fill"></i> <strong id="featuredProductRating">4.8</strong> <span>from verified shoppers</span></div>
+                        <div class="product-feature-price"><strong id="featuredProductPrice">$109.95</strong> <del id="featuredProductOldPrice">$129.95</del> <span>LIMITED EDITION</span></div>
+                        <div class="product-feature-options"><span>SELECT YOUR FINISH</span><button class="product-swatch active" type="button" aria-label="Warm clay finish"></button><button class="product-swatch dark" type="button" aria-label="Midnight finish"></button><button class="product-swatch light" type="button" aria-label="Cloud finish"></button></div>
+                        <div class="product-feature-actions"><button class="btn btn-avyora product-add-button" type="button"><i class="bi bi-bag-plus"></i> Add to bag</button><button class="product-secondary-action" type="button" data-quick-view="featured"><i class="bi bi-arrows-angle-expand"></i> Quick view</button></div>
+                        <div class="product-feature-benefits"><span><i class="bi bi-truck"></i> Free shipping</span><span><i class="bi bi-arrow-repeat"></i> 30-day returns</span></div>
+                    </div>
+                </div>
+
+                <div class="product-grid-heading"><div><span class="section-kicker">SHOP THE COLLECTION</span><h3>Curated capsule lots</h3></div><span class="product-grid-note">Tap a heart to save a favorite <i class="bi bi-heart"></i></span></div>
+                <div id="productGrid" class="row g-4 product-grid product-grid-view"></div>
+                <p id="productEmptyState" class="product-empty-state" hidden>No products match your search. Try another phrase or category.</p>
+
+                <div class="product-bundle-panel">
+                    <div class="product-bundle-intro"><span class="section-kicker">FREQUENTLY PAIRED TOGETHER</span><h3>Complete the ritual <span>+</span></h3><p>Save 15% when you bring the set home together.</p></div>
+                    <div id="bundleProducts" class="product-bundle-items"></div>
+                    <div class="product-bundle-total"><span>Bundle total</span><strong id="bundleTotal">$0.00</strong><button class="btn btn-avyora" type="button"><i class="bi bi-box-seam"></i> Claim bundle</button></div>
+                </div>
+
+                <div class="product-trust-strip">
+                    <div><i class="bi bi-shield-check"></i><span><strong>30-day in-home trial</strong>Try it comfortably, return it simply.</span></div>
+                    <div><i class="bi bi-award"></i><span><strong>Lifetime warranty</strong>Confidence built into every purchase.</span></div>
+                    <div><i class="bi bi-globe2"></i><span><strong>Climate-neutral</strong>Thoughtful delivery, lighter footprint.</span></div>
+                    <div><i class="bi bi-headset"></i><span><strong>24/7 concierge</strong>Real humans, ready to help.</span></div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <div class="modal fade product-quick-modal" id="productQuickView" tabindex="-1" aria-labelledby="productQuickViewTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><span class="section-kicker">QUICK VIEW</span><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><img id="quickViewImage" src="" alt=""><div><span id="quickViewCategory" class="product-category"></span><h3 id="productQuickViewTitle"></h3><div id="quickViewRating" class="product-feature-rating"></div><p id="quickViewDescription"></p><strong id="quickViewPrice" class="product-modal-price"></strong><button class="btn btn-avyora product-add-button" type="button"><i class="bi bi-bag-plus"></i> Add to bag</button></div></div></div></div>
+        </div>
+
+        <aside class="wishlist-drawer" id="wishlistDrawer" aria-hidden="true" aria-labelledby="wishlistDrawerTitle">
+            <div class="wishlist-drawer-header">
+                <div>
+                    <span class="section-kicker">SAVED FOR LATER</span>
+                    <h2 id="wishlistDrawerTitle">Your wishlist</h2>
+                </div>
+                <button class="wishlist-drawer-close" type="button" data-wishlist-close aria-label="Close wishlist"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="wishlist-drawer-body" id="wishlistDrawerBody"></div>
+            <div class="wishlist-drawer-footer"><span><strong id="wishlistDrawerCount">0</strong> saved items</span><a href="favorites.html">View full wishlist <i class="bi bi-arrow-right"></i></a></div>
+        </aside>
+        <div class="wishlist-drawer-backdrop" data-wishlist-close></div>
+
+        <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-labelledby="cartDrawerTitle">
+            <div class="cart-drawer-header">
+                <div>
+                    <span class="section-kicker">READY WHEN YOU ARE</span>
+                    <h2 id="cartDrawerTitle">Your cart</h2>
+                </div>
+                <button class="cart-drawer-close" type="button" data-cart-close aria-label="Close cart"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="cart-drawer-body" id="cartDrawerBody"></div>
+            <div class="cart-drawer-footer">
+                <div class="cart-drawer-total"><span>Subtotal</span><strong id="cartDrawerTotal">₹0</strong></div>
+                <a class="btn btn-avyora cart-drawer-checkout" href="cart.html">Go to checkout <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </aside>
+        <div class="cart-drawer-backdrop" data-cart-close></div>
 
 
     </main>
