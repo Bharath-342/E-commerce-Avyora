@@ -248,6 +248,31 @@ function bindProductControls() {
       }
    };
 
+   const querySearch = new URLSearchParams(window.location.search).get("search") || "";
+   const productSearch = document.getElementById("productSearch");
+   if (productSearch && querySearch) {
+      productSearch.value = querySearch;
+      searchTerm = querySearch.trim().toLowerCase();
+   }
+
+   document.querySelectorAll("[data-product-search-form]").forEach(function (form) {
+      form.addEventListener("submit", function (event) {
+         event.preventDefault();
+         const value = String(form.querySelector("input")?.value || "").trim();
+         if (!value) return;
+
+         if (productSearch) {
+            productSearch.value = value;
+            searchTerm = value.toLowerCase();
+            renderProducts();
+            document.getElementById("product-edit")?.scrollIntoView({ behavior: "smooth" });
+            return;
+         }
+
+         window.location.href = `index.html?search=${encodeURIComponent(value)}#product-edit`;
+      });
+   });
+
    document.querySelectorAll(".hero-mood-option").forEach(function (moodButton) {
       moodButton.addEventListener("click", function () {
          const mood = heroMoods[moodButton.dataset.mood];
@@ -286,6 +311,8 @@ function bindProductControls() {
       searchTerm = event.target.value.trim().toLowerCase();
       renderProducts();
    });
+
+   if (productSearch && querySearch) renderProducts();
 
    document.getElementById("productSort")?.addEventListener("change", function (event) {
       sortOrder = event.target.value;
@@ -335,6 +362,9 @@ function setFeaturedProducts(categoryProducts) {
 function renderProducts() {
    const grid = document.getElementById("productGrid");
    if (!grid) return;
+
+   const featuredPanel = document.querySelector(".product-feature-panel");
+   if (featuredPanel) featuredPanel.hidden = Boolean(searchTerm);
 
    let visibleProducts = products.filter(function (product) {
       const matchesCategory = activeCategory === "all" || product.category === activeCategory;
