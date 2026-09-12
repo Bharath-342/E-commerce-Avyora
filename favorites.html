@@ -1,0 +1,188 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        AVYORA - Your Wishlist
+    </title>
+
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="/favicon.svg">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link
+        rel="stylesheet"
+        href="/src/style.css">
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg fixed-top border-bottom">
+
+        <div class="container">
+
+            <a href="index.html" class="navbar-brand">
+                <img src="/avyora-logo.png" alt="AVYORA" class="brand-logo theme-logo">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+
+                <form class="d-flex mx-lg-auto my-3 my-lg-0" style="max-width: 500px; width: 100%;">
+                    <div class="input-group">
+                        <input type="search" class="form-control" placeholder="Search products..." aria-label="Search products">
+                        <button class="btn btn-avyora" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <ul class="navbar-nav ms-lg-4 align-items-lg-center gap-3">
+                    <li class="nav-item">
+                        <button type="button" class="nav-link text-dark icon-btn wishlist-trigger" data-wishlist-trigger title="Favorites" aria-label="Favorites">
+                            <i class="bi bi-heart"></i>
+                            <span id="wishlistCount" class="cart-count" aria-label="Items in wishlist">0</span>
+                        </button>
+                    </li>
+
+                    <li class="nav-item">
+                        <button type="button" class="nav-link text-dark icon-btn cart-trigger" data-cart-trigger title="Cart" aria-label="Cart">
+                            <i class="bi bi-cart3"></i>
+                            <span id="cartCount" class="cart-count" aria-label="Items in cart">0</span>
+                        </button>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <button class="theme-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Theme settings" title="Theme settings">
+                            <i id="themeIcon" class="bi bi-sun"></i>
+                        </button>
+
+                        <div class="dropdown-menu dropdown-menu-end theme-dropdown p-3">
+                            <h6 class="fw-bold mb-3">Appearance</h6>
+                            <div id="lightThemeOption" class="theme-option active d-flex align-items-center p-2 mb-2">
+                                <i class="bi bi-sun fs-5 me-3"></i>
+                                <div>
+                                    <div class="fw-semibold">Light</div>
+                                    <small class="text-secondary">Light appearance</small>
+                                </div>
+                            </div>
+
+                            <div id="darkThemeOption" class="theme-option d-flex align-items-center p-2 mb-3">
+                                <i class="bi bi-moon-stars fs-5 me-3"></i>
+                                <div>
+                                    <div class="fw-semibold">Dark</div>
+                                    <small class="text-secondary">Dark appearance</small>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-semibold">Brightness</span>
+                                    <span id="brightnessValue" class="text-secondary">100%</span>
+                                </div>
+                                <input type="range" class="form-range" id="brightnessSlider" min="50" max="100" value="100" step="1">
+                                <small class="text-secondary">Adjust brightness for the selected appearance.</small>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="account.html" class="nav-link text-dark icon-btn" title="Account" aria-label="Account">
+                            <i class="bi bi-person-circle"></i>
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <main>
+
+        <section class="favorites-page-section">
+            <div class="container">
+                <div class="favorites-page-header">
+                    <div class="favorites-page-breadcrumb">Home <span>/</span> Saved items</div>
+                    <h1 class="favorites-page-title">Your wishlist</h1>
+                    <p class="favorites-page-subtitle">Everything you saved for later, in one place.</p>
+                </div>
+
+                <div class="favorites-page-topbar">
+                    <span id="favoritesPageCount">0 saved items</span>
+                    <a href="index.html" class="btn btn-avyora"><i class="bi bi-arrow-left"></i> Continue shopping</a>
+                </div>
+
+                <div id="favoritesPageItems" class="favorites-page-items"></div>
+
+                <div id="favoritesPageEmpty" class="favorites-page-empty" hidden>
+                    <i class="bi bi-heart"></i>
+                    <h3>Your wishlist is waiting.</h3>
+                    <p>Save products you love and they will appear here.</p>
+                    <a href="index.html" class="btn btn-avyora">Discover products</a>
+                </div>
+            </div>
+        </section>
+
+        <aside class="wishlist-drawer" id="wishlistDrawer" aria-hidden="true" aria-labelledby="wishlistDrawerTitle">
+            <div class="wishlist-drawer-header">
+                <div>
+                    <span class="section-kicker">SAVED FOR LATER</span>
+                    <h2 id="wishlistDrawerTitle">Your wishlist</h2>
+                </div>
+                <button class="wishlist-drawer-close" type="button" data-wishlist-close aria-label="Close wishlist"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="wishlist-drawer-body" id="wishlistDrawerBody"></div>
+            <div class="wishlist-drawer-footer"><span><strong id="wishlistDrawerCount">0</strong> saved items</span><a href="favorites.html">View full wishlist <i class="bi bi-arrow-right"></i></a></div>
+        </aside>
+        <div class="wishlist-drawer-backdrop" data-wishlist-close></div>
+
+        <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-labelledby="cartDrawerTitle">
+            <div class="cart-drawer-header">
+                <div>
+                    <span class="section-kicker">READY WHEN YOU ARE</span>
+                    <h2 id="cartDrawerTitle">Your cart</h2>
+                </div>
+                <button class="cart-drawer-close" type="button" data-cart-close aria-label="Close cart"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="cart-drawer-body" id="cartDrawerBody"></div>
+            <div class="cart-drawer-footer">
+                <div class="cart-drawer-total"><span>Subtotal</span><strong id="cartDrawerTotal">₹0</strong></div>
+                <a class="btn btn-avyora cart-drawer-checkout" href="cart.html">Go to checkout <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </aside>
+        <div class="cart-drawer-backdrop" data-cart-close></div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/theme.js"></script>
+
+</body>
+
+</html>

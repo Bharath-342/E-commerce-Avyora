@@ -7,6 +7,7 @@ import "./style.css";
 
 const PRODUCT_API_URL = "https://dummyjson.com/products?limit=0";
 const USD_TO_INR = 83.5;
+const BUNDLE_DISCOUNT_RATE = 0.15;
 const FALLBACK_PRODUCTS = [
    { id: 1, title: "The Everyday Carry Bag", price: 89, category: "women's clothing", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=85", rating: { rate: 4.8, count: 124 } },
    { id: 2, title: "Studio Wireless Headphones", price: 100, category: "electronics", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=85", rating: { rate: 4.9, count: 98 } },
@@ -23,10 +24,21 @@ let activeCategory = "all";
 let searchTerm = "";
 let sortOrder = "featured";
 let cartItems = JSON.parse(localStorage.getItem("avyora-cart") || "[]");
-let wishlistItems = JSON.parse(localStorage.getItem("avyora-wishlist") || "[]");
+let wishlistItems = normalizeWishlistIds(JSON.parse(localStorage.getItem("avyora-wishlist") || "[]"));
+let wishlistProducts = JSON.parse(localStorage.getItem("avyora-wishlist-products") || "{}");
 let featuredIndex = 0;
 let featuredProducts = [];
 let featuredTimer;
+let styleQuizAnswers = [];
+let bundleSelection = [];
+
+function normalizeWishlistIds(ids) {
+   const normalized = (Array.isArray(ids) ? ids : [])
+      .map(id => Number(id))
+      .filter(id => Number.isFinite(id) && id > 0);
+
+   return [...new Set(normalized)];
+}
 
 document.addEventListener("DOMContentLoaded", function () {
    bindProductControls();
@@ -35,6 +47,11 @@ document.addEventListener("DOMContentLoaded", function () {
    bindWishlistDrawer();
    bindCartDrawer();
    bindFeaturedCarousel();
+   bindStyleQuiz();
+   initCartPage();
+   initFavoritesPage();
+   initSuccessPage();
+   initAccountPage();
    renderWishlistDrawer();
    loadProducts();
 });
@@ -50,12 +67,88 @@ async function loadProducts() {
       products = normalizeProducts(FALLBACK_PRODUCTS);
    }
 
+   wishlistItems.forEach(function (id) {
+      const product = products.find(item => item.id === id);
+      if (product && !wishlistProducts[id]) wishlistProducts[id] = product;
+   });
+   localStorage.setItem("avyora-wishlist-products", JSON.stringify(wishlistProducts));
+
    updateHeroMoods();
    renderProducts();
    setFeaturedProducts(products);
-   renderBundle(products.slice(0, 3));
+   renderBundle(products.slice(0, 6));
    renderWishlistDrawer();
+   renderFavoritesPage();
+   updateWishlistCount();
    startFeaturedCarousel();
+}
+
+function bindStyleQuiz() {
+   const quiz = document.getElementById("styleQuiz");
+   const question = document.getElementById("styleQuizQuestion");
+   const options = document.getElementById("styleQuizOptions");
+   const step = document.getElementById("styleQuizStep");
+   const result = document.getElementById("styleQuizResult");
+   if (!quiz || !question || !options || !step || !result) return;
+
+   const questions = [
+      {
+         text: "What are you shopping for today?",
+         choices: [
+            ["power", "electronics", "bi-lightning-charge", "Useful upgrades"],
+            ["style", "womenswear", "bi-stars", "A little polish"],
+            ["home", "home", "bi-house-heart", "Make home better"]
+         ]
+      },
+      {
+         text: "What should your picks feel like?",
+         choices: [
+            ["smart", "electronics", "bi-cpu", "Smart and capable"],
+            ["soft", "womenswear", "bi-cloud", "Soft and considered"],
+            ["fresh", "home", "bi-brightness-high", "Fresh and calm"]
+         ]
+      },
+      {
+         text: "What matters most right now?",
+         choices: [
+            ["function", "electronics", "bi-check2-circle", "Everyday function"],
+            ["expression", "accessories", "bi-palette", "Personal expression"],
+            ["comfort", "home", "bi-heart", "More comfort"]
+         ]
+      }
+   ];
+
+   function renderQuestion() {
+      const currentQuestion = questions[styleQuizAnswers.length];
+      step.textContent = `${styleQuizAnswers.length + 1} / ${questions.length}`;
+      question.textContent = currentQuestion.text;
+      options.innerHTML = currentQuestion.choices.map(choice => `<button type="button" data-quiz-value="${choice[0]}" data-quiz-filter="${choice[1]}"><i class="bi ${choice[2]}"></i><span>${choice[3]}</span></button>`).join("");
+      options.querySelectorAll("button").forEach(button => button.addEventListener("click", function () {
+         styleQuizAnswers.push(button.dataset.quizFilter);
+         if (styleQuizAnswers.length < questions.length) {
+            renderQuestion();
+            return;
+         }
+
+         const filter = styleQuizAnswers.sort((a, b) => styleQuizAnswers.filter(item => item === b).length - styleQuizAnswers.filter(item => item === a).length)[0];
+         const label = { electronics: "capable upgrades", womenswear: "polished favorites", accessories: "expressive details", home: "comfort-first finds" }[filter] || "everyday favorites";
+         result.hidden = false;
+         result.innerHTML = `Your edit is ready: <strong>${label}</strong> <button type="button" id="styleQuizShop">Shop it <i class="bi bi-arrow-right"></i></button>`;
+         options.innerHTML = `<button type="button" class="style-quiz-restart" id="styleQuizRestart"><i class="bi bi-arrow-counterclockwise"></i><span>Retake quiz</span></button>`;
+         step.textContent = "DONE";
+         document.getElementById("styleQuizShop").addEventListener("click", function () {
+            document.querySelector(`.product-tab[data-filter="${filter}"]`)?.click();
+            document.getElementById("product-edit")?.scrollIntoView({ behavior: "smooth" });
+         });
+         document.getElementById("styleQuizRestart").addEventListener("click", function () {
+            styleQuizAnswers = [];
+            result.hidden = true;
+            renderQuestion();
+         });
+      }));
+   }
+
+   renderQuestion();
 }
 
 function normalizeProducts(items) {
@@ -284,13 +377,17 @@ function bindCardActions() {
 
          if (isSelected) {
             wishlistItems = wishlistItems.filter(id => id !== productId);
+            delete wishlistProducts[productId];
          } else if (!wishlistItems.includes(productId)) {
             wishlistItems.push(productId);
+            wishlistProducts[productId] = product;
          }
 
          localStorage.setItem("avyora-wishlist", JSON.stringify(wishlistItems));
+         localStorage.setItem("avyora-wishlist-products", JSON.stringify(wishlistProducts));
          updateWishlistCount();
          renderWishlistDrawer();
+         renderFavoritesPage();
       });
    });
 
@@ -377,8 +474,38 @@ function renderFeaturedDots() {
 function renderBundle(bundle) {
    const container = document.getElementById("bundleProducts");
    if (!container || !bundle.length) return;
-   container.innerHTML = bundle.map(product => `<div class="product-bundle-item"><img src="${product.image}" alt="${escapeHtml(product.title)}"><span>${escapeHtml(product.title)}</span><strong>${formatPrice(product.price)}</strong></div>`).join(`<span class="product-bundle-plus">+</span>`);
-   document.getElementById("bundleTotal").textContent = formatPrice(bundle.reduce((total, product) => total + product.price, 0) * 0.85);
+   if (!bundleSelection.length) bundleSelection = bundle.slice(0, 3).map(product => product.id);
+   container.innerHTML = bundle.map(function (product) {
+      const isSelected = bundleSelection.includes(product.id);
+      return `<button class="product-bundle-item${isSelected ? " selected" : ""}" type="button" data-bundle-product="${product.id}" aria-pressed="${isSelected}"><img src="${product.image}" alt="${escapeHtml(product.title)}"><span>${escapeHtml(product.title)}</span><strong>${formatPrice(product.price)}</strong><i class="bi ${isSelected ? "bi-check-circle-fill" : "bi-plus-circle"}"></i></button>`;
+   }).join("");
+
+   container.querySelectorAll("[data-bundle-product]").forEach(function (button) {
+      button.addEventListener("click", function () {
+         const productId = Number(button.dataset.bundleProduct);
+         if (bundleSelection.includes(productId)) {
+            bundleSelection = bundleSelection.filter(id => id !== productId);
+         } else if (bundleSelection.length < 3) {
+            bundleSelection.push(productId);
+         } else {
+            showCartMessage("Choose up to three items for your bundle.");
+            return;
+         }
+         renderBundle(bundle);
+      });
+   });
+
+   const selectedProducts = bundle.filter(product => bundleSelection.includes(product.id));
+   document.getElementById("bundleTotal").textContent = formatPrice(selectedProducts.reduce((total, product) => total + product.price, 0) * 0.85);
+   document.getElementById("bundleSelectionLabel").textContent = `${selectedProducts.length} item${selectedProducts.length === 1 ? "" : "s"} selected`;
+   document.getElementById("claimBundleButton").onclick = function () {
+      if (!selectedProducts.length) {
+         showCartMessage("Choose at least one item for your bundle.");
+         return;
+      }
+      selectedProducts.forEach(product => addToCart(product, false));
+      showCartMessage(`${selectedProducts.length}-item bundle added to cart.`);
+   };
 }
 
 function openQuickView(product) {
@@ -404,8 +531,231 @@ function formatPrice(priceInUsd) {
    }).format(Math.round(priceInUsd * USD_TO_INR));
 }
 
+function getCartPricing() {
+   const itemCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+   const priceSequence = cartItems.flatMap(item => Array.from({ length: item.quantity || 1 }, () => item.price));
+   const eligibleItemCount = Math.floor(itemCount / 3) * 3;
+   const eligibleSubtotal = priceSequence.slice(0, eligibleItemCount).reduce((sum, price) => sum + price, 0);
+   const savings = eligibleSubtotal * BUNDLE_DISCOUNT_RATE;
+
+   return {
+      subtotal: cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0),
+      savings,
+      total: cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0) - savings,
+      eligibleItemCount,
+      nextBundleCount: itemCount % 3 === 0 ? 0 : 3 - (itemCount % 3)
+   };
+}
+
+function initSuccessPage() {
+   const orderIdEl = document.getElementById("successOrderId");
+   const orderCustomerEl = document.getElementById("successCustomer");
+   const orderTotalEl = document.getElementById("successTotal");
+   const orderEmailEl = document.getElementById("successEmail");
+   const orderItemsEl = document.getElementById("successItems");
+
+   if (!orderIdEl && !orderCustomerEl && !orderTotalEl && !orderEmailEl && !orderItemsEl) return;
+
+   const order = JSON.parse(localStorage.getItem("avyora-last-order") || "null");
+   if (!order) {
+      orderIdEl.textContent = "No active order";
+      return;
+   }
+
+   orderIdEl.textContent = order.id;
+   orderCustomerEl.textContent = order.customer;
+   orderTotalEl.textContent = formatPrice(order.total || 0);
+   orderEmailEl.textContent = order.email;
+   orderItemsEl.textContent = `${order.items || 0} item${(order.items || 0) === 1 ? "" : "s"} in this order`;
+}
+
+function initAccountPage() {
+   const accountPage = document.getElementById("accountPage");
+   if (!accountPage) return;
+
+   const order = JSON.parse(localStorage.getItem("avyora-last-order") || "null");
+   const emptyState = document.getElementById("accountEmpty");
+   const orderCard = document.getElementById("accountOrder");
+
+   if (!order) {
+      emptyState.hidden = false;
+      orderCard.hidden = true;
+      return;
+   }
+
+   document.getElementById("accountCustomer").textContent = order.customer || "AVYORA shopper";
+   document.getElementById("accountEmail").textContent = order.email || "";
+   document.getElementById("accountOrderId").textContent = order.id || "--";
+   document.getElementById("accountOrderTotal").textContent = formatPrice(order.total || 0);
+   document.getElementById("accountOrderItems").textContent = `${order.items || 0} item${(order.items || 0) === 1 ? "" : "s"}`;
+   document.getElementById("accountOrderDate").textContent = order.placedAt
+      ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(order.placedAt))
+      : "Recently placed";
+   emptyState.hidden = true;
+   orderCard.hidden = false;
+}
+
+function initCartPage() {
+   const cartPageItems = document.getElementById("cartPageItems");
+   const checkoutForm = document.getElementById("checkoutForm");
+   const continueShopping = document.getElementById("continueShopping");
+
+   if (!cartPageItems && !checkoutForm) return;
+
+   renderCartPage();
+
+   if (checkoutForm) {
+      checkoutForm.addEventListener("submit", function (event) {
+         event.preventDefault();
+
+         if (!cartItems.length) {
+            showCartMessage("Add an item before placing your order.");
+            return;
+         }
+
+         const formData = new FormData(checkoutForm);
+         const name = String(formData.get("fullName") || "").trim();
+         const email = String(formData.get("email") || "").trim();
+         const address = String(formData.get("address") || "").trim();
+         const city = String(formData.get("city") || "").trim();
+
+         if (!name || !email || !address || !city) {
+            showCartMessage("Please complete the shipping details.");
+            return;
+         }
+
+         const pricing = getCartPricing();
+         const shippingFee = 249;
+         const order = {
+            id: `AVY-${Date.now()}`,
+            customer: name,
+            email,
+            items: cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0),
+            total: pricing.total + shippingFee,
+            placedAt: new Date().toISOString()
+         };
+
+         localStorage.setItem("avyora-last-order", JSON.stringify(order));
+         cartItems = [];
+         localStorage.setItem("avyora-cart", JSON.stringify(cartItems));
+         updateCartCount();
+         renderCartDrawer();
+         renderCartPage();
+         checkoutForm.reset();
+
+         showCartMessage("Order placed successfully.");
+         window.location.href = "success.html";
+      });
+   }
+
+   if (continueShopping) {
+      continueShopping.addEventListener("click", function () {
+         window.location.href = "index.html";
+      });
+   }
+}
+
+function renderCartPage() {
+   const cartPageItems = document.getElementById("cartPageItems");
+   const cartPageEmpty = document.getElementById("cartPageEmpty");
+   const checkoutButton = document.getElementById("checkoutButton");
+   const subtotalEl = document.getElementById("checkoutSubtotal");
+   const shippingEl = document.getElementById("checkoutShipping");
+   const savingsEl = document.getElementById("checkoutSavings");
+   const totalEl = document.getElementById("checkoutTotal");
+
+   if (!cartPageItems || !subtotalEl || !shippingEl || !savingsEl || !totalEl) return;
+
+   const pricing = getCartPricing();
+   const shippingFee = cartItems.length ? 249 : 0;
+   const finalTotal = Math.max(0, pricing.total + shippingFee);
+
+   subtotalEl.textContent = formatPrice(pricing.subtotal);
+   shippingEl.textContent = formatPrice(shippingFee);
+   savingsEl.textContent = pricing.savings > 0 ? `- ${formatPrice(pricing.savings)}` : formatPrice(0);
+   totalEl.textContent = formatPrice(finalTotal);
+
+   if (checkoutButton) {
+      checkoutButton.disabled = cartItems.length === 0;
+      checkoutButton.classList.toggle("disabled", cartItems.length === 0);
+   }
+
+   if (!cartItems.length) {
+      cartPageEmpty.hidden = false;
+      cartPageItems.innerHTML = "";
+      return;
+   }
+
+   cartPageEmpty.hidden = true;
+   cartPageItems.innerHTML = cartItems.map(function (item, index) {
+      const quantity = item.quantity || 1;
+      const lineTotal = item.price * quantity;
+      return `
+         <article class="cart-page-item" data-cart-page-item="${index}">
+            <img src="${item.image}" alt="${escapeHtml(item.title)}">
+            <div class="cart-page-item-info">
+               <span class="section-kicker">AVYORA PICK</span>
+               <h3>${escapeHtml(item.title)}</h3>
+               <div class="cart-page-item-meta">
+                  <strong>${formatPrice(lineTotal)}</strong>
+                  <span>${formatPrice(item.price)} each</span>
+               </div>
+               <div class="cart-page-item-actions">
+                  <div class="cart-page-item-qty" aria-label="Quantity selector">
+                     <button type="button" class="qty-button" data-cart-qty-change="${index}" data-cart-qty-delta="-1" aria-label="Decrease quantity">-</button>
+                     <span>${quantity}</span>
+                     <button type="button" class="qty-button" data-cart-qty-change="${index}" data-cart-qty-delta="1" aria-label="Increase quantity">+</button>
+                  </div>
+                  <button type="button" class="cart-page-remove" data-cart-page-remove="${index}">Remove</button>
+               </div>
+            </div>
+         </article>
+      `;
+   }).join("");
+
+   cartPageItems.querySelectorAll("[data-cart-page-remove]").forEach(function (button) {
+      button.addEventListener("click", function () {
+         const index = Number(button.dataset.cartPageRemove);
+         cartItems.splice(index, 1);
+         localStorage.setItem("avyora-cart", JSON.stringify(cartItems));
+         updateCartCount();
+         renderCartDrawer();
+         renderCartPage();
+      });
+   });
+
+   cartPageItems.querySelectorAll("[data-cart-qty-change]").forEach(function (button) {
+      button.addEventListener("click", function () {
+         const index = Number(button.dataset.cartQtyChange);
+         const delta = Number(button.dataset.cartQtyDelta);
+         const item = cartItems[index];
+
+         if (!item) return;
+
+         const nextQuantity = (item.quantity || 1) + delta;
+         if (nextQuantity <= 0) {
+            cartItems.splice(index, 1);
+         } else {
+            item.quantity = nextQuantity;
+         }
+
+         localStorage.setItem("avyora-cart", JSON.stringify(cartItems));
+         updateCartCount();
+         renderCartDrawer();
+         renderCartPage();
+      });
+   });
+}
+
 function addToCart(product, buyNow) {
-   cartItems.push({ id: product.id, title: product.title, price: product.price, image: product.image });
+   const existingItem = cartItems.find(item => item.id === product.id);
+
+   if (existingItem) {
+      existingItem.quantity = (existingItem.quantity || 1) + 1;
+   } else {
+      cartItems.push({ id: product.id, title: product.title, price: product.price, image: product.image, quantity: 1 });
+   }
+
    localStorage.setItem("avyora-cart", JSON.stringify(cartItems));
    updateCartCount();
    renderCartDrawer();
@@ -414,14 +764,16 @@ function addToCart(product, buyNow) {
 
 function updateCartCount() {
    const cartCount = document.getElementById("cartCount");
+   const cartTotal = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
    if (cartCount) {
-      cartCount.textContent = cartItems.length;
-      cartCount.classList.toggle("has-items", cartItems.length > 0);
+      cartCount.textContent = cartTotal;
+      cartCount.classList.toggle("has-items", cartTotal > 0);
    }
 }
 
 function updateWishlistCount() {
+   wishlistItems = normalizeWishlistIds(wishlistItems);
    const wishlistCount = document.getElementById("wishlistCount");
 
    if (wishlistCount) {
@@ -471,17 +823,26 @@ function renderCartDrawer() {
 
    if (!body || !total) return;
 
-   total.textContent = formatPrice(cartItems.reduce((sum, item) => sum + item.price, 0));
+   const pricing = getCartPricing();
+   total.innerHTML = pricing.savings > 0
+      ? `<del>${formatPrice(pricing.subtotal)}</del> ${formatPrice(pricing.total)} <small>-${formatPrice(pricing.savings)}</small>`
+      : formatPrice(pricing.total);
 
    if (!cartItems.length) {
       body.innerHTML = `<div class="cart-empty"><i class="bi bi-bag"></i><h3>Your cart is waiting.</h3><p>Add something useful, beautiful, or both.</p></div>`;
       return;
    }
 
-   body.innerHTML = cartItems.map(function (item, index) {
+   const promotionMessage = pricing.nextBundleCount > 0
+      ? `<p class="cart-promotion-note"><i class="bi bi-stars"></i> Add ${pricing.nextBundleCount} more item${pricing.nextBundleCount === 1 ? "" : "s"} to unlock 15% off the next bundle.</p>`
+      : `<p class="cart-promotion-note active"><i class="bi bi-check-circle"></i> 15% bundle savings applied to ${pricing.eligibleItemCount} items.</p>`;
+
+   body.innerHTML = promotionMessage + cartItems.map(function (item, index) {
+      const quantity = item.quantity || 1;
+      const lineTotal = item.price * quantity;
       return `<article class="cart-drawer-item">
          <img src="${item.image}" alt="${escapeHtml(item.title)}">
-         <div class="cart-drawer-item-info"><span>AVYORA PICK</span><h3>${escapeHtml(item.title)}</h3><strong>${formatPrice(item.price)}</strong></div>
+         <div class="cart-drawer-item-info"><span>AVYORA PICK</span><h3>${escapeHtml(item.title)}</h3><strong>${formatPrice(lineTotal)}</strong><small class="cart-drawer-qty">Qty: ${quantity}</small></div>
          <button type="button" class="cart-drawer-remove" aria-label="Remove ${escapeHtml(item.title)}" data-cart-remove="${index}"><i class="bi bi-trash3"></i></button>
       </article>`;
    }).join("");
@@ -511,14 +872,85 @@ function closeWishlistDrawer() {
    document.body.classList.remove("wishlist-drawer-open");
 }
 
+function initFavoritesPage() {
+   const favoritesGrid = document.getElementById("favoritesPageItems");
+   const emptyState = document.getElementById("favoritesPageEmpty");
+   if (!favoritesGrid && !emptyState) return;
+
+   renderFavoritesPage();
+}
+
+function renderFavoritesPage() {
+   wishlistItems = normalizeWishlistIds(wishlistItems);
+   const favoritesGrid = document.getElementById("favoritesPageItems");
+   const emptyState = document.getElementById("favoritesPageEmpty");
+   const countEl = document.getElementById("favoritesPageCount");
+
+   if (!favoritesGrid && !emptyState) return;
+
+   const savedProducts = wishlistItems
+      .map(id => products.find(product => product.id === id) || wishlistProducts[id])
+      .filter(Boolean);
+
+   if (countEl) countEl.textContent = `${savedProducts.length} saved item${savedProducts.length === 1 ? "" : "s"}`;
+
+   if (!favoritesGrid || !emptyState) return;
+
+   if (!savedProducts.length) {
+      favoritesGrid.innerHTML = "";
+      emptyState.hidden = false;
+      return;
+   }
+
+   emptyState.hidden = true;
+   favoritesGrid.innerHTML = savedProducts.map(function (product) {
+      return `
+         <article class="favorites-page-item" data-favorites-product="${product.id}">
+            <img src="${product.image}" alt="${escapeHtml(product.title)}">
+            <div class="favorites-page-detail">
+               <span class="section-kicker">${escapeHtml(product.category)}</span>
+               <h3>${escapeHtml(product.title)}</h3>
+               <p>${escapeHtml(product.description)}</p>
+               <div class="favorites-page-meta">
+                  <strong>${formatPrice(product.price)}</strong>
+                  <span><i class="bi bi-star-fill"></i> ${product.rating.rate}</span>
+               </div>
+               <div class="favorites-page-actions">
+                  <button type="button" class="btn btn-avyora favorites-add-cart" data-favorites-add="${product.id}"><i class="bi bi-cart-plus"></i> Add to cart</button>
+                  <button type="button" class="favorites-remove" data-favorites-remove="${product.id}">Remove</button>
+               </div>
+            </div>
+         </article>
+      `;
+   }).join("");
+
+   favoritesGrid.querySelectorAll("[data-favorites-remove]").forEach(function (button) {
+      button.addEventListener("click", function () {
+         const productId = Number(button.dataset.favoritesRemove);
+         removeFromWishlist(productId);
+      });
+   });
+
+   favoritesGrid.querySelectorAll("[data-favorites-add]").forEach(function (button) {
+      button.addEventListener("click", function () {
+         const productId = Number(button.dataset.favoritesAdd);
+         const product = products.find(item => item.id === productId);
+         if (product) {
+            addToCart(product, false);
+         }
+      });
+   });
+}
+
 function renderWishlistDrawer() {
+   wishlistItems = normalizeWishlistIds(wishlistItems);
    const body = document.getElementById("wishlistDrawerBody");
    const count = document.getElementById("wishlistDrawerCount");
 
    if (!body || !count) return;
 
    const savedProducts = wishlistItems
-      .map(id => products.find(product => product.id === id))
+      .map(id => products.find(product => product.id === id) || wishlistProducts[id])
       .filter(Boolean);
 
    count.textContent = savedProducts.length;
@@ -553,10 +985,13 @@ function renderWishlistDrawer() {
 
 function removeFromWishlist(productId) {
    wishlistItems = wishlistItems.filter(id => id !== productId);
+   delete wishlistProducts[productId];
    localStorage.setItem("avyora-wishlist", JSON.stringify(wishlistItems));
+   localStorage.setItem("avyora-wishlist-products", JSON.stringify(wishlistProducts));
    updateWishlistCount();
    renderProducts();
    renderWishlistDrawer();
+   renderFavoritesPage();
 }
 
 function showCartMessage(message) {

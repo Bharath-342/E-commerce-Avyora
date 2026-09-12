@@ -459,6 +459,20 @@
 
                             </div>
 
+                            <div class="style-quiz" id="styleQuiz">
+                                <div class="style-quiz-heading">
+                                    <span class="section-kicker">FIND YOUR EDIT</span>
+                                    <span class="style-quiz-step" id="styleQuizStep">1 / 3</span>
+                                </div>
+                                <h2 id="styleQuizQuestion">What are you shopping for today?</h2>
+                                <div class="style-quiz-options" id="styleQuizOptions">
+                                    <button type="button" data-quiz-value="power" data-quiz-filter="electronics"><i class="bi bi-lightning-charge"></i><span>Useful upgrades</span></button>
+                                    <button type="button" data-quiz-value="style" data-quiz-filter="womenswear"><i class="bi bi-stars"></i><span>A little polish</span></button>
+                                    <button type="button" data-quiz-value="home" data-quiz-filter="home"><i class="bi bi-house-heart"></i><span>Make home better</span></button>
+                                </div>
+                                <p class="style-quiz-result" id="styleQuizResult" hidden></p>
+                            </div>
+
                             <div class="hero-quick-info"></div>
 
                         </div>
@@ -590,9 +604,9 @@
                 <p id="productEmptyState" class="product-empty-state" hidden>No products match your search. Try another phrase or category.</p>
 
                 <div class="product-bundle-panel">
-                    <div class="product-bundle-intro"><span class="section-kicker">FREQUENTLY PAIRED TOGETHER</span><h3>Complete the ritual <span>+</span></h3><p>Save 15% when you bring the set home together.</p></div>
+                    <div class="product-bundle-intro"><span class="section-kicker">BUILD YOUR OWN BUNDLE</span><h3>Complete the ritual <span>+</span></h3><p>Choose up to three favorites and save 15% together.</p></div>
                     <div id="bundleProducts" class="product-bundle-items"></div>
-                    <div class="product-bundle-total"><span>Bundle total</span><strong id="bundleTotal">$0.00</strong><button class="btn btn-avyora" type="button"><i class="bi bi-box-seam"></i> Claim bundle</button></div>
+                    <div class="product-bundle-total"><span id="bundleSelectionLabel">3 items selected</span><strong id="bundleTotal">$0.00</strong><button class="btn btn-avyora" id="claimBundleButton" type="button"><i class="bi bi-box-seam"></i> Claim bundle</button></div>
                 </div>
 
                 <div class="product-trust-strip">
